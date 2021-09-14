@@ -1,0 +1,143 @@
+service: app-movies-backend
+plugins:
+  - serverless-offline
+
+custom:
+
+  serverless-offline:
+    resourceRoutes: true
+    # httpsProtocol: "dev-certs"
+    httpPort: 4000
+    stageVariables:
+      foo: "bar"
+    
+  defaultStage: desa
+  stages:
+    desa: DESA
+    test: TEST
+    prod: PROD
+  regions:
+    code:
+      desa: us-east-2
+      test: us-east-2
+      prod: us-east-1
+    abrev:
+      desa: UE2
+      test: UE2
+      prod: UE1
+  environment:
+    desa: DESARROLLO
+    test: TEST
+    prod: PRODUCCION
+  account:
+    desa: 178760397497
+    test: 178760397497
+    prod: 178760397497
+  versionLayer:
+    desa: 9
+    test: 9
+    prod: 1
+  bucketDeploy:
+    desa: ue2s3bucketprv001
+    test: ue2s3bucketprv001
+    prod: ue1s3bucketprv001
+  nomenclature: 
+    default: ${self:custom.regions.abrev.${self:provider.stage}}${self:custom.stages.${self:provider.stage}}
+  
+  ################# Variables de entorno lambdas #################
+
+  # tablas
+  tableMovies: ${self:custom.nomenclature.default}DBADYNMOVIES001
+
+
+  valTimeOutApi:
+    local: 10000
+    VALOR: 10000
+  
+  ################# Variables de entorno lambdas #################
+
+  awsLambdaRoleName: ROL_CHATBOTFACEBOOK
+
+provider:
+  name: aws
+  # runtime: nodejs14.x
+  memorySize: 256
+  timeout: 30
+  versionFunctions: false
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${self:custom.regions.code.${self:provider.stage}}
+  stackName: ${self:custom.nomenclature.default}MTOACFMOVIES001
+  deploymentBucket:
+    name: ${self:custom.bucketDeploy.${self:provider.stage}}
+    serverSideEncryption: AES256
+  tracing:
+    apiGateway: true
+    lambda: true
+  deploymentPrefix: serverless
+  iam:
+    role: arn:aws:iam::${self:custom.account.${self:provider.stage}}:role/${self:custom.awsLambdaRoleName}
+  endpointType: regional
+  apiGateway:
+    shouldStartNameWithService: true
+  environment:
+    STAGE: ${self:provider.stage}
+    LOG_LEVEL: "DEBUG"
+  tags:
+    ENTORNO: ${self:custom.environment.${self:provider.stage}}
+    PROYECTO: MOVIES_RECOMMENDATION
+    DOMINIO: RESEARCH
+    RESPONSABLE: JESUS CONTRERAS
+    ESTADO_OPERACION: PROYECTO
+    AMBIENTE: ${self:custom.stages.${self:provider.stage}}
+  stackTags:
+    NAME: ${self:custom.nomenclature.default}MTOACFMOVIES001
+    ENTORNO: ${self:custom.environment.${self:provider.stage}}
+    PROYECTO: MOVIES_RECOMMENDATION
+    DOMINIO: RESEARCH
+    RESPONSABLE: JESUS CONTRERAS
+    ESTADO_OPERACION: PROYECTO
+    AMBIENTE: ${self:custom.stages.${self:provider.stage}}
+
+package:
+  individually: true
+  excludeDevDependencies: false
+
+functions:
+  movies:
+      handler: src/movies/app.handler
+      runtime: nodejs14.x
+      name: ${self:custom.nomenclature.default}COMLMBMOVIES001
+      description: Función
+      memorySize: 256
+      tags:
+        NAME: ${self:custom.nomenclature.default}COMLMBMOVIES001
+      events:
+        - http:
+            path: v1/movie
+            method: post
+            integration: lambda
+            authorizer: aws_iam
+            response: 
+              ${file(config/serverless/http-response.yml)}
+            request:
+              template:
+                application/json: ${file(config/serverless/request/movies/listMovies.vm)}
+            cors: 
+              ${file(config/serverless/http-cors.yml)}
+      environment:
+        MAIL_SERVICE: MailService
+      package:
+        exclude:
+          - ./**
+        include:
+          - src/movies/**
+      # layers:
+      #   - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsTidoLayer:${self:custom.versionLayer.${self:provider.stage}}
+
+  
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${self:custom.nomenclature.default}NETAPIMOVIES001

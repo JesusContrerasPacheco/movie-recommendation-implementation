@@ -1,0 +1,23 @@
+{
+  "name": "movie-recommendation-implementation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JesusContrerasPacheco/movie-recommendation-implementation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JesusContrerasPacheco/movie-recommendation-implementation/issues"
+  },
+  "homepage": "https://github.com/JesusContrerasPacheco/movie-recommendation-implementation#readme",
+  "devDependencies": {
+    "serverless-offline": "^8.1.0"
+  }
+}
