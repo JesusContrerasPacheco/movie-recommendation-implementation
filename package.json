@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/JesusContrerasPacheco/movie-recommendation-implementation#readme",
   "devDependencies": {
-    "serverless-offline": "^8.1.0"
+    "serverless-offline": "^8.1.0",
+    "serverless-wsgi": "^2.0.1"
   }
 }

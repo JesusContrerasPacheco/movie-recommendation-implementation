@@ -1,9 +1,12 @@
 service: app-movies-backend
 plugins:
   - serverless-offline
+  - serverless-wsgi
 
 custom:
-
+  wsgi:
+    app: src.recommenderMovies.app.app
+    
   serverless-offline:
     resourceRoutes: true
     # httpsProtocol: "dev-certs"
@@ -60,7 +63,6 @@ custom:
 
 provider:
   name: aws
-  # runtime: nodejs14.x
   memorySize: 256
   timeout: 30
   versionFunctions: false
@@ -82,6 +84,7 @@ provider:
   environment:
     STAGE: ${self:provider.stage}
     LOG_LEVEL: "DEBUG"
+    BUCKET_MOVIES: 'ue2s3bucketupc001'
   tags:
     ENTORNO: ${self:custom.environment.${self:provider.stage}}
     PROYECTO: MOVIES_RECOMMENDATION
@@ -113,7 +116,7 @@ functions:
         NAME: ${self:custom.nomenclature.default}COMLMBMOVIES001
       events:
         - http:
-            path: v1/movie
+            path: v1/movies
             method: post
             integration: lambda
             authorizer: aws_iam
@@ -126,6 +129,7 @@ functions:
               ${file(config/serverless/http-cors.yml)}
       environment:
         MAIL_SERVICE: MailService
+        BUCKET_MOVIES: ue2s3bucketupc001
       package:
         exclude:
           - ./**
@@ -134,7 +138,32 @@ functions:
       # layers:
       #   - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsTidoLayer:${self:custom.versionLayer.${self:provider.stage}}
 
-  
+  recommender:
+    handler: wsgi_handler.handler
+    runtime: python3.8
+    name: ${self:custom.nomenclature.default}COMLMBMOVIES002
+    tags:
+      NAME: ${self:custom.nomenclature.default}COMLMBMOVIES002
+    events: 
+      - http:
+          path: /api/v1/movies/recommend
+          method: post 
+    # response: 
+    #   ${file(config/serverless/http-response.yml)}
+    environment:
+      BUCKET_KEY_RATINGS: recommender-files/ratings.npy
+      BUCKET_KEY_MOVIES:  recommender-files/movies.npy
+      BUCKET_KEY_MODEL:
+    package:
+      individually: true
+      exclude:
+        - node_modules/**
+        - .vscode/**
+        - package-lock.json
+        - package.json
+        - .git/**
+      include:
+          - src/recommenderMovies/**  
 resources:
   Resources:
     ApiGatewayRestApi:
