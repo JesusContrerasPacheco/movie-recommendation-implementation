@@ -126,6 +126,7 @@ functions:
               ${file(config/serverless/http-cors.yml)}
       environment:
         MAIL_SERVICE: MailService
+        TBL_UPC_MOVIES: UPC_MOVIES
       package:
         exclude:
           - ./**

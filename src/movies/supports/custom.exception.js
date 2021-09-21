@@ -1,6 +1,6 @@
 
 
-class CustomException extends AppException {
+class CustomException {
   constructor(
     code,
     message,
@@ -8,7 +8,6 @@ class CustomException extends AppException {
     httpStatus,
     exception,
   ) {
-    super(code, message);
     this.name = 'CustomException';
     this.code = code;
     this.success = false;
