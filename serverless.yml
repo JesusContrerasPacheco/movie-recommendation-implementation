@@ -154,7 +154,7 @@ functions:
     environment:
       BUCKET_KEY_RATINGS: recommender-files/ratings.npy
       BUCKET_KEY_MOVIES:  recommender-files/movies.npy
-      BUCKET_KEY_MODEL:
+      BUCKET_KEY_MODEL:   recommender-files/knn_model.pickle
     package:
       individually: true
       exclude:
@@ -163,6 +163,8 @@ functions:
         - package-lock.json
         - package.json
         - .git/**
+        - src/recommenderMovies/__pycache__
+        - src/recommenderMovies/supports/__pycache__
       include:
           - src/recommenderMovies/**  
 resources:
