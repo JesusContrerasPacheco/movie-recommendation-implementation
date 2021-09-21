@@ -130,6 +130,7 @@ functions:
       environment:
         MAIL_SERVICE: MailService
         BUCKET_MOVIES: ue2s3bucketupc001
+        TBL_UPC_MOVIES: UPC_MOVIES
       package:
         exclude:
           - ./**

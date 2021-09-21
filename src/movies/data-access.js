@@ -1,10 +1,23 @@
 const DynamoDB = require("./supports/dynamodb");
-const DomainConstant = require('./supports/domain.constant');
-const ServiceSupport = require('./supports/service.support');
-const LambdaSupport = require('./supports/lambda.support');
 
 module.exports = {
-    async createUser(payload) {
-        return "OK";
+    async listMovies(payload) {
+        const params = {
+            "TableName": process.env.TBL_UPC_MOVIES,
+            "IndexName": "year-index",
+            "KeyConditionExpression": '#year = :year',
+            "FilterExpression" : "contains(#title, :title)",
+            "ExpressionAttributeNames": {
+                "#year": "year",
+                "#title": "title"
+            },
+            "ExpressionAttributeValues": {
+                ":year": "(2002)", //valor por defecto con mayor resultado
+                ":title": payload.title
+            },
+            "ProjectionExpression": `movieId, title, genres`
+        };
+        const result = await DynamoDB.query(params);
+        return result;
     }
 };

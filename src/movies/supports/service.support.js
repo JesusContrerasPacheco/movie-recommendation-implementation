@@ -1,23 +1,23 @@
-const moment = require("moment-timezone");
+// const moment = require("moment-timezone");
 
 module.exports = {
     getMomentLocal(date) {
         if(!date){
             date = new Date();    
         }
-        return moment(date.getTime()).tz("America/Lima");
+        return "" //moment(date.getTime()).tz("America/Lima");
     },
     getMomentString(date) {
         if(!date){
             date = new Date();    
         }
-        return moment(date.getTime()).tz("America/Lima").format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        return "" //moment(date.getTime()).tz("America/Lima").format("YYYY-MM-DDTHH:mm:ss.SSSZ");
     },
     getMomentStringFormat(date,format) {
         if(!date){
             date = new Date();    
         }
-        return moment(date.getTime()).tz("America/Lima").format(format);
+        return "" //moment(date.getTime()).tz("America/Lima").format(format);
     },
     getUUID(){
         return Uuid.version4();
@@ -25,19 +25,17 @@ module.exports = {
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     },
-    createResponse({ code, message }, data){
+    createResponse(data){
         return {
-            code,
-            success: true,
-            message,
-            data
+            statusCode: 200,
+            body: JSON.stringify(data),
         }
     },
     getMomentLocalSeconds(date) {
         if(!date){
             date = new Date();    
         }
-        let aux = `${moment(date.getTime()).tz("America/Lima").valueOf()}`;
+        let aux = "" //`${moment(date.getTime()).tz("America/Lima").valueOf()}`;
         aux = aux.substring(0, aux.length - 3);
         return parseInt(aux);
     },
@@ -59,5 +57,16 @@ module.exports = {
             }
             return 0;
         });
+    },
+    isEmpty(...valores) {
+        for (let i = 0; i < valores.length; i++) {
+          const valor = valores[i];
+          if ([null, undefined, 'undefined', 'null', '', 0, false, 'false', []].includes(valor)
+          || (Array.isArray(valor) && valor.length === 0)
+          || (valor.constructor === Object && Object.entries(valor).length === 0)) {
+            return true;
+          }
+        }
+        return false;
     }
 };
