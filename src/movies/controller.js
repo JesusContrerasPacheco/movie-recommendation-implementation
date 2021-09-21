@@ -1,9 +1,9 @@
 const Service = require('./service');
-const Validation = require('./validation');
+// const Validation = require('./validation');
 
 module.exports = {
   async listMovies(payload) {
-    return "ok";
+    return await Service.listMovies(payload);
   },
   
 };
