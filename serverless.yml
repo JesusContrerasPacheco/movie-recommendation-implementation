@@ -6,6 +6,7 @@ plugins:
 custom:
   wsgi:
     app: src.recommenderMovies.app.app
+    packRequirements: false
     
   serverless-offline:
     resourceRoutes: true
@@ -41,9 +42,9 @@ custom:
     test: 9
     prod: 1
   bucketDeploy:
-    desa: ue2s3bucketprv001
-    test: ue2s3bucketprv001
-    prod: ue1s3bucketprv001
+    desa: ue2s3bucketupc001
+    test: ue2s3bucketupc001
+    prod: ue2s3bucketupc001
   nomenclature: 
     default: ${self:custom.regions.abrev.${self:provider.stage}}${self:custom.stages.${self:provider.stage}}
   
@@ -84,7 +85,7 @@ provider:
   environment:
     STAGE: ${self:provider.stage}
     LOG_LEVEL: "DEBUG"
-    BUCKET_MOVIES: 'ue2s3bucketupc001'
+    BUCKET_MOVIES: '${self:custom.bucketDeploy.${self:provider.stage}}'
   tags:
     ENTORNO: ${self:custom.environment.${self:provider.stage}}
     PROYECTO: MOVIES_RECOMMENDATION
@@ -100,6 +101,13 @@ provider:
     RESPONSABLE: JESUS CONTRERAS
     ESTADO_OPERACION: PROYECTO
     AMBIENTE: ${self:custom.stages.${self:provider.stage}}
+
+layers:
+  pythondeps:
+    path: layers/tools
+    compatibleRuntimes:
+      - python3.8
+    description: "Dependencies for movie recommender-system-api"
 
 package:
   individually: true
@@ -155,6 +163,8 @@ functions:
       BUCKET_KEY_RATINGS: recommender-files/ratings.npy
       BUCKET_KEY_MOVIES:  recommender-files/movies.npy
       BUCKET_KEY_MODEL:   recommender-files/knn_model.pickle
+    layers:
+      - {Ref: PythondepsLambdaLayer}
     package:
       individually: true
       exclude:

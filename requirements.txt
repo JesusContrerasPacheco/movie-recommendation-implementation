@@ -1,6 +1,0 @@
-s3fs
-pickle
-Flask
-numpy
-pandas
-boto3
