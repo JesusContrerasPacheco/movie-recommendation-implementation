@@ -1,5 +1,6 @@
-S3FileSystem
-
-Flask==1.0.2
-numpy==1.21.0
-pandas==1.2.5
+s3fs
+pickle
+Flask
+numpy
+pandas
+boto3

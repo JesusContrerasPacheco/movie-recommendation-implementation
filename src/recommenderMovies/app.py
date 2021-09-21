@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask,request,jsonify
 
 
 from src.recommenderMovies.controller import Controller
@@ -10,14 +10,9 @@ app = Flask(__name__)
 
 @app.route("/api/v1/movies/recommend",methods = ['POST'])
 def recommerder():
-    # request_body = request.get_json()
-    # movie_controller.recommender_movie(self)
-    # movie_id  =  request_body['movieId']
-    # n_results = request_body['nResults']
-    
-    # recommended_shows_dict = recommender_movie(movie_id,n_results)
-    return 'hello'
-    # return jsonify(recommended_shows_dict)
+    request_body = request.get_json()
+    recommendations = movie_controller.recommender_movies(request_body)
+    return jsonify(recommendations)
 
 
 
