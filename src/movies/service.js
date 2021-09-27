@@ -1,10 +1,15 @@
 const DataAccess = require('./data-access');
-// const ServiceSupport = require("./supports/service.support");
+const axios = require('axios').default;
+const { API_EXTERNAL } = require("./supports/domain.constant");
 
 module.exports = {
     async listMovies(payload){
         let result = await DataAccess.listMovies(payload);
-        console.log("result ", result)
-        return result; //ServiceSupport.createResponse(result);
-    }
+        return result;
+    },
+    async popularListMovies(payload){
+        const response = await axios.get(API_EXTERNAL);
+        console.log(response.data.results);
+        return response.data.results;
+    },
 };

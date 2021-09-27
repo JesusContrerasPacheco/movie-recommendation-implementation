@@ -7,7 +7,6 @@ module.exports = {
     STAT: {
         ACTIVE: "ACT",
         INACTIVE: "INA",
-        // FRIEND
         PENDEND: "PEN",
         LOCK: "LCK",
         REJECT: "REJ"
@@ -26,5 +25,5 @@ module.exports = {
           message: "Success Query"
         }
     },
-    CODE_COUNTRY_PHONE: ["PE", "VE"] //["+51", "+56"]
+    API_EXTERNAL: "https://api.themoviedb.org/3/movie/popular?api_key=6d45390016625080a1caacc79a089261&language=en-US&page=1"
 };

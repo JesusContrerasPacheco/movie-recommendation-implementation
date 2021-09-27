@@ -38,8 +38,8 @@ custom:
     test: 178760397497
     prod: 178760397497
   versionLayer:
-    desa: 9
-    test: 9
+    desa: 1
+    test: 1
     prod: 1
   bucketDeploy:
     desa: ue2s3bucketupc001
@@ -127,7 +127,7 @@ functions:
             path: v1/movies
             method: post
             integration: lambda
-            authorizer: aws_iam
+            # authorizer: aws_iam
             response: 
               ${file(config/serverless/http-response.yml)}
             request:
@@ -144,8 +144,40 @@ functions:
           - ./**
         include:
           - src/movies/**
-      # layers:
-      #   - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsTidoLayer:${self:custom.versionLayer.${self:provider.stage}}
+      layers:
+        - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
+
+  moviesPopular:
+      handler: src/movies/app.handler
+      runtime: nodejs14.x
+      name: ${self:custom.nomenclature.default}COMLMBMOVIES003
+      description: Función
+      memorySize: 256
+      tags:
+        NAME: ${self:custom.nomenclature.default}COMLMBMOVIES003
+      events:
+        - http:
+            path: v1/movies/popular
+            method: get
+            integration: lambda
+            # authorizer: aws_iam
+            response: 
+              ${file(config/serverless/http-response.yml)}
+            request:
+              template:
+                application/json: ${file(config/serverless/request/movies/popularListMovies.vm)}
+            cors: 
+              ${file(config/serverless/http-cors.yml)}
+      environment:
+        MAIL_SERVICE: MailService
+        BUCKET_MOVIES: ue2s3bucketupc001
+      package:
+        exclude:
+          - ./**
+        include:
+          - src/movies/**
+      layers:
+        - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
 
   recommender:
     handler: wsgi_handler.handler
