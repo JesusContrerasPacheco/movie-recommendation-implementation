@@ -12,7 +12,7 @@ class CustomException {
     this.code = code;
     this.success = false;
     this.message = message;
-    if (details) this.details = details; // Detail Array
+    if (details) this.details = details;
 
     this.httpStatus = httpStatus;
     if (exception) {
