@@ -22,9 +22,8 @@ module.exports = {
         return false;
     },
     async getPosters(data){
-        const {recommerders} = data
-
-        const response = await Promise.all(recommerders.map(async(value)=>{
+        
+        data.recommerders = await Promise.all(data.recommerders.map(async(value)=>{
             
             let poster = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY_TMDB}&query=${value.title}`)
             value['poster'] = poster.data.total_results>0? `https://www.themoviedb.org/t/p/w220_and_h330_face/${poster.data.results[0].poster_path}`:''
@@ -32,8 +31,9 @@ module.exports = {
             return value;
         
         }));
+
         
-        return response;
+        return data;
      
      
     }
