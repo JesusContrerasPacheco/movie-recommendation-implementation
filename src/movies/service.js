@@ -1,6 +1,7 @@
 const DataAccess = require('./data-access');
 const axios = require('axios').default;
-const { API_EXTERNAL } = require("./supports/domain.constant");
+const ServiceSupport = require('./supports/service.support')
+const { API_EXTERNAL,API_EXTERNAL_MOVIE_RECOMMENDER } = require("./supports/domain.constant");
 
 module.exports = {
     async listMovies(payload){
@@ -11,5 +12,17 @@ module.exports = {
         const response = await axios.get(API_EXTERNAL);
         console.log(response.data.results);
         return response.data.results;
+    },
+
+    async recommenderMovies(payload){
+        
+        const {movieId,ntop} = payload
+
+        let response = await axios.post(API_EXTERNAL_MOVIE_RECOMMENDER, {
+            movieId: movieId,
+            ntop: ntop
+        });   
+        response = await ServiceSupport.getPosters(response.data)
+        return JSON.stringify(response);
     },
 };

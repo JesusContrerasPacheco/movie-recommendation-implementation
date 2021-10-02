@@ -1,12 +1,7 @@
 service: app-movies-backend
 plugins:
   - serverless-offline
-  - serverless-wsgi
-
 custom:
-  wsgi:
-    app: src.recommenderMovies.app.app
-    packRequirements: false
     
   serverless-offline:
     resourceRoutes: true
@@ -102,13 +97,6 @@ provider:
     ESTADO_OPERACION: PROYECTO
     AMBIENTE: ${self:custom.stages.${self:provider.stage}}
 
-layers:
-  pythondeps:
-    path: layers/tools
-    compatibleRuntimes:
-      - python3.8
-    description: "Dependencies for movie recommender-system-api"
-
 package:
   individually: true
   excludeDevDependencies: false
@@ -146,7 +134,39 @@ functions:
           - src/movies/**
       layers:
         - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
-
+  recommenderMovies:
+      handler: src/movies/app.handler
+      runtime: nodejs14.x
+      name: ${self:custom.nomenclature.default}COMLMBMOVIES002
+      description: Función
+      memorySize: 256
+      tags:
+        NAME: ${self:custom.nomenclature.default}COMLMBMOVIES002
+      events:
+        - http:
+            path: v1/movies/recommend
+            method: post
+            integration: lambda
+            # authorizer: aws_iam
+            response: 
+              ${file(config/serverless/http-response.yml)}
+            request:
+              template:
+                application/json: ${file(config/serverless/request/movies/recommenderMovies.vm)}
+            cors: 
+              ${file(config/serverless/http-cors.yml)}
+      environment:
+        MAIL_SERVICE: MailService
+        BUCKET_MOVIES: ue2s3bucketupc001
+        API_KEY_TMDB: 6d45390016625080a1caacc79a089261
+        API_EXTERNAL_MOVIE_RECOMMENDER: http://ec2-3-239-53-196.compute-1.amazonaws.com:8080/api/v1/movies/recommeder
+      package:
+        exclude:
+          - ./**
+        include:
+          - src/movies/**
+      layers:
+        - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
   moviesPopular:
       handler: src/movies/app.handler
       runtime: nodejs14.x
@@ -178,37 +198,6 @@ functions:
           - src/movies/**
       layers:
         - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
-
-  recommender:
-    handler: wsgi_handler.handler
-    runtime: python3.8
-    name: ${self:custom.nomenclature.default}COMLMBMOVIES002
-    tags:
-      NAME: ${self:custom.nomenclature.default}COMLMBMOVIES002
-    events: 
-      - http:
-          path: /api/v1/movies/recommend
-          method: post 
-    # response: 
-    #   ${file(config/serverless/http-response.yml)}
-    environment:
-      BUCKET_KEY_RATINGS: recommender-files/ratings.npy
-      BUCKET_KEY_MOVIES:  recommender-files/movies.npy
-      BUCKET_KEY_MODEL:   recommender-files/knn_model.pickle
-    layers:
-      - {Ref: PythondepsLambdaLayer}
-    package:
-      individually: true
-      exclude:
-        - node_modules/**
-        - .vscode/**
-        - package-lock.json
-        - package.json
-        - .git/**
-        - src/recommenderMovies/__pycache__
-        - src/recommenderMovies/supports/__pycache__
-      include:
-          - src/recommenderMovies/**  
 resources:
   Resources:
     ApiGatewayRestApi:

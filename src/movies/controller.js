@@ -9,5 +9,9 @@ module.exports = {
   async popularListMovies(payload){
     return await Service.popularListMovies(payload);
   },
+
+  async recommenderMovies(payload){
+    return await Service.recommenderMovies(payload);
+  },
   
 };
