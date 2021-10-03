@@ -212,6 +212,12 @@ functions:
         LMB_MAIL_SERVICE: MailService
         BUCKET_MOVIES: ue2s3bucketupc001,
         TBL_UPC_HISTORY: UPC_HISTORY
+      events:
+        - schedule:
+            name: UE2DESACOMLMBMOVIES004
+            description: 'Notificacion de recomendaciones'
+            rate: rate(30 minutes)
+            enabled: true
       package:
         exclude:
           - ./**
