@@ -32,6 +32,7 @@ module.exports = {
 
                         // enviar correo utilizando el servicio
                         await LambdaSupport.invokeLegacyFunctionSync(process.env.LMB_MAIL_SERVICE, params);
+                        await DataAccess.updateHistory(item.ID);
                     }
                 })
             )

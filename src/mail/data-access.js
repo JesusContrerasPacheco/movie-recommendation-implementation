@@ -16,5 +16,22 @@ module.exports = {
         };
         const result = await DynamoDB.query(params);
         return result;
+    },
+    async updateHistory(historyId) {
+        const params = {
+            "TableName": process.env.TBL_UPC_HISTORY,
+            "Key": {
+                "ID": historyId
+            },
+            "UpdateExpression": 'set #st = :st',
+            "ExpressionAttributeNames": {
+                "#st": "state"
+            },
+            "ExpressionAttributeValues": {
+                ":st": STAT.LOCK
+            }
+        };
+        const result = await DynamoDB.update(params);
+        return result;
     }
 };
