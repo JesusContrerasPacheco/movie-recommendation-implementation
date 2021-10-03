@@ -160,6 +160,7 @@ functions:
         BUCKET_MOVIES: ue2s3bucketupc001
         API_KEY_TMDB: 6d45390016625080a1caacc79a089261
         API_EXTERNAL_MOVIE_RECOMMENDER: http://ec2-3-239-53-196.compute-1.amazonaws.com:8080/api/v1/movies/recommeder
+        TBL_UPC_HISTORY: UPC_HISTORY
       package:
         exclude:
           - ./**
@@ -198,6 +199,27 @@ functions:
           - src/movies/**
       layers:
         - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
+  
+  notification:
+      handler: src/mail/app.handler
+      runtime: nodejs14.x
+      name: ${self:custom.nomenclature.default}COMLMBMOVIES004
+      description: Función para notificacion de historial de recomendaciones
+      memorySize: 256
+      tags:
+        NAME: ${self:custom.nomenclature.default}COMLMBMOVIES004
+      environment:
+        LMB_MAIL_SERVICE: MailService
+        BUCKET_MOVIES: ue2s3bucketupc001,
+        TBL_UPC_HISTORY: UPC_HISTORY
+      package:
+        exclude:
+          - ./**
+        include:
+          - src/mail/**
+      layers:
+        - arn:aws:lambda:${self:provider.region}:${self:custom.account.${self:provider.stage}}:layer:projectsNodejsMoviesLayer:${self:custom.versionLayer.${self:provider.stage}}
+
 resources:
   Resources:
     ApiGatewayRestApi:

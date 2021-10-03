@@ -16,13 +16,23 @@ module.exports = {
 
     async recommenderMovies(payload){
         
-        const {movieId,ntop} = payload
+        const {movieId,ntop, user} = payload
 
         let response = await axios.post(API_EXTERNAL_MOVIE_RECOMMENDER, {
             movieId: movieId,
             ntop: ntop
         });   
         response = await ServiceSupport.getPosters(response.data)
+
+        // add history
+        await DataAccess.registerHistory({ 
+            ID: ServiceSupport.uidv4(), 
+            user, 
+            date: `${new Date().toISOString()}`, 
+            recommerders: response.recommerders,
+            state: "ACT"
+        });
+
         return JSON.stringify(response);
     },
 };
