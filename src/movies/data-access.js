@@ -19,5 +19,14 @@ module.exports = {
         };
         const result = await DynamoDB.query(params);
         return result;
+    },
+    async registerHistory(payload) {
+        const params = {
+            "TableName": process.env.TBL_UPC_HISTORY,
+            "Item": payload
+        };
+        console.log("payload", payload)
+        const result = await DynamoDB.put(params);
+        return result;
     }
 };
